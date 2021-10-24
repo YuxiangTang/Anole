@@ -14,7 +14,8 @@ from collections import OrderedDict
 
 from .utils import augment_ill, augment_img
 
-__all__ = ['BaseDataset']
+__all__ = ['BaseDataset', 'generate_dataset']
+
 
 class BaseDataset(Dataset):
     """
@@ -37,7 +38,7 @@ class BaseDataset(Dataset):
         :param label_mode: illuminant label or statistic label
         :param minik: serve for the generation of statistic label
         """
-        self.dataset_name = dataset_name
+        self._dataset_name = dataset_name
         self.data_dir = data_dir
         self.input_size = input_size
         self.training = training
@@ -47,10 +48,9 @@ class BaseDataset(Dataset):
         self.img_list = self.three_fold(fold_idx)
         
         self.angle = 60
-        self.scale = [0.5, 1.0]
+        self.scale = [0.1, 1.0]
         self.aug_color = 0.8
-        
-        
+    
     def __len__(self):
         return len(self.img_list)
     
@@ -61,7 +61,7 @@ class BaseDataset(Dataset):
         img, ill, camera = self.load_data(img_path)
 
         # One trick: Set 0 to a very small value
-        img = img * 65535.0 # 0 ~ 1 --> 0 ~ 65535
+        img = img * 65535.0  # 0 ~ 1 --> 0 ~ 65535
         img[img == 0] = 1e-5
         
         if self.training:
@@ -69,9 +69,9 @@ class BaseDataset(Dataset):
             gt_batch = []
             # For a single image, augmenting multiple times can improve training efficiency 
             for _ in range(self.aug_num):
-                img_aug = augment_img(img) # self.transform(image=img)['image']
-                remove_stat, stat, _ = self.generate_statistic_gt(img_aug, ill) # Convert to SET
-                img_aug, gt_aug = augment_ill(remove_stat, stat, self.aug_color, self.angle, self.scale, self.input_size)
+                img_aug = augment_img(img, self.angle, self.scale, self.input_size) # self.transform(image=img)['image']
+                remove_stat, stat, si = self.generate_statistic_gt(img_aug, ill) # Convert to SET
+                img_aug, gt_aug = augment_ill(remove_stat, stat, self.aug_color)
                 img_aug = img_aug / np.max(img_aug)
                 img_batch.append(img_aug)
                 gt_batch.append(gt_aug)
@@ -91,6 +91,10 @@ class BaseDataset(Dataset):
         gt = torch.from_numpy(gt.copy()).float()
         si = torch.from_numpy(si.copy()).float()
         return OrderedDict(img=img, gt=gt, statis=si)
+    
+    @property
+    def dataset_name(self):
+        return self._dataset_name
     
     @abstractmethod
     def load_data(self, img_path):
@@ -168,3 +172,5 @@ class BaseDataset(Dataset):
             
         return img_list
     
+def generate_dataset(dataset_type, **kwargs):
+    return dataset_type(training=True, **kwargs), dataset_type(training=False, **kwargs)

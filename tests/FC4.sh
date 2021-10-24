@@ -1,0 +1,1 @@
+bash launch.py --cfg ./config/FC4.yaml

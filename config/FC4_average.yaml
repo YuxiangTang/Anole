@@ -1,0 +1,84 @@
+exp_name: FC4
+mode: train
+
+dataset:
+  name: CCD
+  params:
+    data_dir: '/dataset/colorconstancy/quick_data/'
+    fold_idx: 0
+    input_size: 512
+    aug_num: 1
+    statistic_mode: False
+  train_loader:
+    batch_size: 16
+    num_workers: 8
+    shuffle: True
+    prefetch_factor: 20
+    persistent_workers: True
+  eval_loader:
+    batch_size: 1
+    num_workers: 2
+    shuffle: False
+    drop_last: False
+    
+model:
+  name: base_pipeline
+  params:
+    pretrained: 'path'
+
+  backbone:
+    name: squeezenet1_1
+    params:
+      pretrained: True
+
+  neck: 
+    name: fully_conv_neck
+    params:
+      input_channels: 512
+      output_channels: 64
+
+  head:
+    name: average_pooling_head
+    params:
+      input_channels: 64
+
+criterion:
+  name: angular_loss
+  params: {}
+
+plugin:
+  logger:
+    name: 
+      - text_logger
+    params: 
+      - {}
+
+  metric:
+    name: 
+      - loss_metrics
+      - timing_metrics
+    params: 
+      - iteration: True
+        epoch: True
+        whole: True
+        eval: True
+      - iteration: True
+        epoch: True
+        whole: True
+        eval: True
+
+strategy:
+  name: classic_stragtegy
+  params:
+    train_epochs: 3000
+    iterations_interval: 10
+    eval_every: 1
+    ckpt_every: 1
+    device: cuda:0
+
+  
+optimizer:
+  lr: 1e-5
+
+
+

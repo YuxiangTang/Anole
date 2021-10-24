@@ -1,8 +1,8 @@
-
 """ 
 Register certain module families. 
 Refer to [mmcv](https://github.com/open-mmlab/mmcv/blob/master/mmcv/utils/registry.py).
 """
+from omegaconf.listconfig import ListConfig
 
 __all__ = ['Registry', 'build_from_cfg']
 
@@ -13,7 +13,6 @@ class Registry(object):
     Args:
         name (str): Registry name.
     """
-
     def __init__(self, name):
         self._name = name
         self._obj_dict = dict()
@@ -57,7 +56,7 @@ class Registry(object):
         return obj
 
 
-def build_from_cfg(name, cfg, registry, default_args=None):
+def build_from_cfg(name, cfg, registry):
     """Build a module from config dict.
 
     Args:
@@ -69,16 +68,21 @@ def build_from_cfg(name, cfg, registry, default_args=None):
     Returns:
         obj: The constructed object.
     """
+    if type(name) is not ListConfig:
+        name = [name]
+        cfg = [cfg]
+    else:
+        assert (len(name) == len(cfg))
 
-    assert isinstance(default_args, dict) or default_args is None
+    ret = []
+    for n, c in zip(name, cfg):
+        obj = registry.get(n)
+        if obj is None:
+            raise KeyError(f'{n} is not in the {registry.name} registry. '
+                           f'Choose among {list(registry.obj_dict.keys())}')
+        ret.append(obj(**c))
 
-    obj = registry.get(name)
-    if obj is None:
-        raise KeyError(f'{name} is not in the {registry.name} registry. '
-                       f'Choose among {list(registry.obj_dict.keys())}')
-
-    if default_args is not None:
-        for key, value in default_args.items():
-            cfg.setdefault(key, value)
-
-    return obj(**cfg)
+    if len(ret) == 1 and registry.name != "metrics_plugin":
+        return ret[0]
+    else:
+        return ret

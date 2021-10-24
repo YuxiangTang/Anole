@@ -4,3 +4,4 @@ log
 ckpt
 pretrained
 .ipynb_checkpoints
+std.log
