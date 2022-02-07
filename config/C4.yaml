@@ -1,4 +1,4 @@
-exp_name: FC4
+exp_name: C4
 mode: train
 
 dataset:
@@ -22,8 +22,9 @@ dataset:
     drop_last: False
     
 model:
-  name: base_pipeline
+  name: cascade_pipeline
   params:
+    cascade_num: 3
     pretrained: 'path'
 
   backbone:
@@ -68,7 +69,7 @@ plugin:
         eval: True
 
 strategy:
-  name: classic_stragtegy
+  name: cascade_stragtegy
   params:
     train_epochs: 3000
     iterations_interval: 10

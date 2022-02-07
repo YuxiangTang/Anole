@@ -24,11 +24,11 @@ class ConfidencePoolingHead(nn.Module):
         confidence = x[:, 3:4, :, :]
         return torch.sum(rgb * confidence, dim=(2, 3))
 
-    def forward(self, x):
+    def forward(self, x, **kwargs):
         x = self.fc(x)
         return nn.functional.normalize(self.confidence_pooling(x), dim=1)
 
 
 @HEAD.register_obj
-def confidence_pooling_head(input_channels):
-    return ConfidencePoolingHead(input_channels)
+def confidence_pooling_head(**kwargs):
+    return ConfidencePoolingHead(**kwargs)

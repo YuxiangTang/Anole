@@ -150,4 +150,4 @@ class TextLogger(BaseLogger):
 
 @LOGGERPLUGIN.register_obj
 def text_logger(**kwargs):
-    return TextLogger()
+    return TextLogger(**kwargs)

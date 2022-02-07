@@ -1,3 +1,3 @@
 from .builder import *
 from .base_dataset import *
-from .CCD import *
+from .popular_benchmarks import *

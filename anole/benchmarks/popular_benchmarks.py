@@ -2,20 +2,21 @@ import numpy as np
 from .base_dataset import BaseDataset, generate_dataset
 from .builder import DATASET
 
-__all__ = ['CCD']
+__all__ = ['CCD', 'NUS', 'Cube']
 
 
-class CCDataset(BaseDataset):
+class RAWDataset(BaseDataset):
     def __init__(self,
                  data_dir,
-                 fold_idx,
+                 dataset_name,
+                 fold_idx=0,
                  minik=1,
                  aug_num=1,
                  training=False,
                  input_size=512,
                  statistic_mode=False):
         super().__init__(
-            dataset_name='CC_half',
+            dataset_name=dataset_name,
             data_dir=data_dir,
             input_size=input_size,
             training=training,
@@ -32,11 +33,24 @@ class CCDataset(BaseDataset):
         camera = str(np.load(img_path + '_camera.npy'))
         # preprocess raw
         img = img / np.max(img)
-        idx1, idx2, _ = np.where(mask == False)
-        img[idx1, idx2, :] = 0  # 1e-5
+        idx1, idx2, _ = np.where(mask is False)
+        img[idx1, idx2, :] = 0
         return img, ill, camera
 
 
 @DATASET.register_obj
 def CCD(**kwargs):
-    return generate_dataset(CCDataset, **kwargs)
+    kwargs["dataset_name"] = 'CC_ori'
+    return generate_dataset(RAWDataset, **kwargs)
+
+
+@DATASET.register_obj
+def NUS(**kwargs):
+    kwargs["dataset_name"] = 'NUS_half'
+    return generate_dataset(RAWDataset, **kwargs)
+
+
+@DATASET.register_obj
+def Cube(**kwargs):
+    kwargs["dataset_name"] = 'Cube_half'
+    return generate_dataset(RAWDataset, **kwargs)

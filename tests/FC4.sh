@@ -1,1 +1,1 @@
-bash launch.py --cfg ./config/FC4.yaml
+python anole/launch.py --cfg ./config/FC4_average.yaml

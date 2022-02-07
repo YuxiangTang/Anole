@@ -9,13 +9,21 @@ __all__ = ['base_pipeline']
 class BasePipeline(nn.Module):
     def __init__(self, backbone, neck, head):
         super(BasePipeline, self).__init__()
-        self.backbone = nn.Sequential(*list(backbone.children())[0][:12])
-        self.neck = neck
-        self.head = head
+
+        _backbone = build_from_cfg(backbone.name, backbone.params, BACKBONE)
+        _neck = build_from_cfg(neck.name, neck.params, NECK)
+        _head = build_from_cfg(head.name, head.params, HEAD)
+
+        self.backbone = nn.Sequential(*list(_backbone.children())[0][:12])
+        self.neck = _neck
+        self.head = _head
         self.init_weight()
 
     def init_weight(self):
-        for m in self.modules():
+        for name, m in self.named_modules():
+            print(name)
+            if "backbone" in name:
+                continue
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight,
                                         mode='fan_out',
@@ -23,16 +31,13 @@ class BasePipeline(nn.Module):
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
 
-    def forward(self, x):
+    def forward(self, x, **kwargs):
         x = self.backbone(x)
-        x = self.neck(x)
-        x = self.head(x)
+        x = self.neck(x, **kwargs)
+        x = self.head(x, **kwargs)
         return x
 
 
 @PIPELINE.register_obj
 def base_pipeline(backbone, neck, head, **kwargs):
-    _backbone = build_from_cfg(backbone.name, backbone.params, BACKBONE)
-    _neck = build_from_cfg(neck.name, neck.params, NECK)
-    _head = build_from_cfg(head.name, head.params, HEAD)
-    return BasePipeline(backbone=_backbone, neck=_neck, head=_head)
+    return BasePipeline(backbone=backbone, neck=neck, head=head, **kwargs)

@@ -75,10 +75,11 @@ strategy:
     eval_every: 1
     ckpt_every: 1
     device: cuda:0
-
+    device_mode: False
+    statis_mode: ${dataset.params.statistic_mode}
   
 optimizer:
-  lr: 1e-5
+  lr: 3e-4
 
 
 

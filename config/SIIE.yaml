@@ -1,4 +1,4 @@
-exp_name: FC4
+exp_name: SIIE
 mode: train
 
 dataset:
@@ -22,25 +22,23 @@ dataset:
     drop_last: False
     
 model:
-  name: base_pipeline
+  name: siie_pipeline
   params:
     pretrained: 'path'
 
   backbone:
-    name: squeezenet1_1
-    params:
-      pretrained: True
+    name: three_layer_cnn
+    params: {}
 
   neck: 
-    name: fully_conv_neck
-    params:
-      input_channels: 512
-      output_channels: 64
+    name: identity_neck
+    params: {}
 
   head:
-    name: average_pooling_head
+    name: basic_pred_head
     params:
-      input_channels: 64
+      input_channels: 512
+      kernel_size: 13
 
 criterion:
   name: angular_loss

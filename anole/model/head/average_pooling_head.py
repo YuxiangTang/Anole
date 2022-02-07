@@ -22,11 +22,11 @@ class AveragePoolingHead(nn.Module):
     def average_pooling(self, x):
         return torch.mean(x, dim=(2, 3))
 
-    def forward(self, x):
+    def forward(self, x, **kwargs):
         x = self.fc(x)
         return nn.functional.normalize(self.average_pooling(x), dim=1)
 
 
 @HEAD.register_obj
-def average_pooling_head(input_channels, output_channels):
-    return AveragePoolingHead(input_channels, output_channels)
+def average_pooling_head(**kwargs):
+    return AveragePoolingHead(**kwargs)

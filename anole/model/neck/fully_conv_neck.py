@@ -21,10 +21,10 @@ class FullyConvNeck(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-    def forward(self, x):
+    def forward(self, x, **kwargs):
         return self.fc(x)
 
 
 @NECK.register_obj
-def fully_conv_neck(input_channels, output_channels):
-    return FullyConvNeck(input_channels, output_channels)
+def fully_conv_neck(**kwargs):
+    return FullyConvNeck(**kwargs)

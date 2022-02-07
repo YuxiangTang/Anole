@@ -28,7 +28,7 @@ def init_dataloader(
 
 def init_model(model, **kwargs):
     """
-    TODO: load pretrained model or load from stratch
+    TODO: load pretrained model
     Hint: Note the keys of the model
     """
     return model

@@ -127,6 +127,9 @@ class BaseStrategy(object):
     def criterion(self):
         pass
 
+    def data_format(self, data):
+        return data.to(self.device).float()
+
     # *************** Training Phase ***************
     def before_training(self, **kwargs):
         for p in self.plugins:

@@ -31,4 +31,4 @@ class AngularLoss(torch.nn.Module):
 
 @LOSS.register_obj
 def angular_loss(**kwargs):
-    return AngularLoss()
+    return AngularLoss(**kwargs)
