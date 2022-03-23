@@ -1,5 +1,5 @@
 """
-Some operations about SE-Scheme and other basic operations.
+Basic class for loading dataset (Pytorch)
 """
 from abc import abstractmethod
 import math
@@ -19,7 +19,9 @@ __all__ = ['BaseDataset', 'generate_dataset']
 
 class BaseDataset(Dataset):
     """
-    Provides the base functions that all subclasses depend on.
+    Provides the base functions that all subclasses depend on
+    and denotes the abstract methods that all subclasses need
+    to implement.
     """
     def __init__(
         self,
@@ -34,11 +36,15 @@ class BaseDataset(Dataset):
         defalut_list: List[str] = [],
     ):
         """
-        :param data_dir: the path that saves the raw images (processed ".npy")
-        :param input_size: the size of training images
-        :param training: if not, the images will not augment 
-        :param statistic_mode: illuminant label or statistic label
-        :param minik: serve for the generation of statistic label
+        :param dataset_name: eg. CCD, NUS, Cube+.
+        :param data_dir: the father path of the dataset.
+            the data_dir + dataset_name is the full path
+            that saves the raw images (processed ".npy").
+        :param input_size: the size of training images.
+        :param training: if not, the images will not be augmented.
+        :param statistic_mode: illuminant label or statistic label.
+        :param minik: serve for the generation of statistic label.
+        :param defalut_list: build dataloader from list.
         """
         self._dataset_name = dataset_name
         self.data_dir = data_dir
@@ -113,6 +119,9 @@ class BaseDataset(Dataset):
 
     @abstractmethod
     def load_data(self, img_path):
+        """
+        Each datasets require a different way to load the data.
+        """
         pass
 
     def generate_statistic_gt(self, img, ill):
