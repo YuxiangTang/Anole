@@ -15,11 +15,17 @@ The library is organized into four main modules:
 - Unified Evaluation Framework [[anole/training](https://github.com/YuxiangTang/Anole/tree/master/anole/training)]: It is difficult for people without camera processing experience to get started with color constancy, and some specifications are not accurately transmitted to various researchers, which leads to irregular use of data sets and inconsistent evaluation standards. To solve this problem, this codebase provides a unified testing framework and system, so as to standardize and unify the indicators of each dataset.
 - Experimental Management [[./config](https://github.com/YuxiangTang/Anole/tree/master/config)]: In this code base, you can manage the experiment by generating a report over Hydra and visualization technology after each experiment.
 
+![structure](./display/structure.png)
+
 ## Getting Started
 
 1. Setup Environment
 
 ```bash
+% optional
+conda create -n anole python=3.7
+conda activate anole
+% necessary
 pip install -r requirements.txt
 ```
 
@@ -36,6 +42,35 @@ pip install -r requirements.txt
 ```bash
 python launch.py --cfg FC4_confidence.yaml
 ```
+
+The classic FC4 adopts SqueezeNet, which still cannot achieve the purpose of industrialization. In Anole, you can achieve a smaller model architecture by replacing the backbone. The following will show an example of changing to mobilenet:
+
+```yaml
+model:
+  name: base_pipeline
+  params:
+    pretrained: 'path'
+
+  backbone:
+    name: mobilenetv3_small # here is change
+    params:
+      pretrained: True
+
+  neck: 
+    name: fully_conv_neck
+    params:
+      input_channels: 512
+      output_channels: 64
+
+  head:
+    name: confidence_pooling_head
+    params:
+      input_channels: 64
+```
+
+Any part can be changed in yaml and all implemented modules can be seen in [anole/model](https://github.com/YuxiangTang/Anole/tree/master/anole/model). 
+
+> The use of Anole is similar to [MMCV](https://github.com/open-mmlab/mmcv). The module is called and extended by Registry, and the model and training strategy are built by parsing "config/*. yaml" file in [launch.py](https://github.com/YuxiangTang/Anole/blob/tangyuxiang_dev/anole/launch.py) file.
 
 ## Extending Anole
 
