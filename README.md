@@ -15,7 +15,7 @@ The library is organized into four main modules:
 - Unified Evaluation Framework [[anole/training](https://github.com/YuxiangTang/Anole/tree/master/anole/training)]: It is difficult for people without camera processing experience to get started with color constancy, and some specifications are not accurately transmitted to various researchers, which leads to irregular use of data sets and inconsistent evaluation standards. To solve this problem, this codebase provides a unified testing framework and system, so as to standardize and unify the indicators of each dataset.
 - Experimental Management [[./config](https://github.com/YuxiangTang/Anole/tree/master/config)]: In this code base, you can manage the experiment by generating a report over Hydra and visualization technology after each experiment.
 
-![structure](./display/structure.png)
+<img src="./display/structure.png" alt="structure" style="zoom:80%;" />
 
 ## Getting Started
 
@@ -43,7 +43,7 @@ pip install -r requirements.txt
 python launch.py --cfg FC4_confidence.yaml
 ```
 
-The classic FC4 adopts SqueezeNet, which still cannot achieve the purpose of industrialization. In Anole, you can achieve a smaller model architecture by replacing the backbone. The following will show an example of changing to mobilenet:
+The classic FC4 adopts SqueezeNet but still cannot achieve the purpose of industrialization. In Anole, you can get a smaller model by easily replacing the backbone. The following example shows how to change the backbone to MobileNet:
 
 ```yaml
 model:
