@@ -31,11 +31,23 @@ pip install -r requirements.txt
 
 ### Prepare the dataset
 
-##### Option One: Download the source data and pre-process it locally.
+##### ==> Option One: Download the source data and pre-process it locally.
 
-1. Download the source data and organize files as required
+**Step1:** Download the source data and organize files as required
 
-- ***Dataset1: [ColorChecker (Reporcessed)](https://www2.cs.sfu.ca/~colour/data/shi_gehler/)***
+You need to create the initial folder as follows, and then put the corresponding datasets one by one.
+
+```
+data
+└── source
+    ├── colorchecker2010
+    ├── Cube
+    └── NUS
+```
+
+------
+
+***Dataset1: [ColorChecker (Reporcessed)](https://www2.cs.sfu.ca/~colour/data/shi_gehler/)***
 
 Download the **PNG Images** and **Measured illumination** first. After decompression, the files are organized as follows:
 
@@ -51,7 +63,9 @@ Download the **PNG Images** and **Measured illumination** first. After decompres
 
 **img.txt**：include all image names.
 
-- ***Dataset2: [NUS-8](https://cvil.eecs.yorku.ca/projects/public_html/illuminant/illuminant.html)***
+------
+
+***Dataset2: [NUS-8](https://cvil.eecs.yorku.ca/projects/public_html/illuminant/illuminant.html)***
 
 Download **PNG files (ZIP1, ZIP2, ...)**, **MASK**, **GROUNDTRUTH** from eight camera. After decompression, the files are organized as follows:
 
@@ -88,7 +102,9 @@ Download **PNG files (ZIP1, ZIP2, ...)**, **MASK**, **GROUNDTRUTH** from eight c
 └── SonyA57
 ```
 
-- ***Dataset3: [Cube/Cube+](https://ipg.fer.hr/ipg/resources/color_constancy)***
+------
+
+***Dataset3: [Cube/Cube+](https://ipg.fer.hr/ipg/resources/color_constancy)***
 
 Download **PNG files (PNG_1_200.zip, ...)**, **cube+_gt.txt**. After decompression, the files are organized as follows:
 
@@ -101,7 +117,9 @@ Download **PNG files (PNG_1_200.zip, ...)**, **cube+_gt.txt**. After decompressi
 
 **img.txt**：include all image names.
 
-2. Pre-process data locally
+------
+
+**Step2:** Pre-process data locally
 
 ```bash
 python data_preprocess.py --output_dir ./data/processed/ --input_dir ./data/source/ --resize2half False
@@ -113,9 +131,7 @@ python data_preprocess.py --output_dir ./data/processed/ --input_dir ./data/sour
 
 **resize2half**: For speed up training, reduce the length and width of the preprocessed file to half.
 
-
-
-##### Option Two: Download the pre-processed data.
+##### ==> Option Two: Download the pre-processed data.
 
 The url is: 
 
