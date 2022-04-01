@@ -6,6 +6,23 @@ import cv2
 from scipy.io import loadmat
 import argparse
 
+"""
+TODO: add colorchart detection to get ccm.
+"""
+# detector = cv2.mcc.CCheckerDetector_create()
+# def detect_colorchart(img, gt, detector, img_path):
+#     uint_img = (np.power(img[:, :, ::-1] / gt / np.max(img), 1/2.4) * 255).astype(np.uint8)
+#     if detector.process(uint_img, cv2.mcc.MCC24, nc=1):
+#         checker = detector.getBestColorChecker()
+#         chartsRGB = checker.getChartsRGB()
+#         mat24 = chartsRGB[:,1].copy().reshape(24, 3)
+#         mat24 /= np.max(mat24)
+#     else:
+#         raise Exception("Detection is failed, img path:", img_path)
+#     # mat24 is RGB format
+#     return mat24
+
+
 def preprocess_colorchecker(data_dir, output_path, resize2half):
     """
     Preprocess the data from the ColorChecker dataset.
@@ -17,15 +34,16 @@ def preprocess_colorchecker(data_dir, output_path, resize2half):
     save npy: img, mask, camera type, ground truth
     """
     if not os.path.exists(output_path):
-        os.mkdir(output_path)
+        os.makedirs(output_path)
         
     img_gt = load_ill_ccd(data_dir)
     img_list = load_nameseq(data_dir + 'img.txt')
     lst = []
     SATURATION_SCALE = 0.95
-
+    
+    
     start = time.time()
-    for idx in range(0, len(img_list)): #
+    for idx in range(0, len(img_list)): 
         #  read image
         img_path = data_dir + img_list[idx] + ".png"
 
@@ -50,6 +68,11 @@ def preprocess_colorchecker(data_dir, output_path, resize2half):
         # saturationLevel= (3692 - blackLevel) * SATURATION_SCALE
         # img[img > saturationLevel] = saturationLevel
         
+        # detect colorchecker
+        # TODO: get color chart
+        # mat24 = detect_colorchart(img, img_gt[idx], detector, img_path)
+
+        
         if resize2half:
             # resize image, (* 4) to be integer.
             img = cv2.resize(img, (0,0), fx=0.5, fy=0.5) * 4
@@ -62,11 +85,11 @@ def preprocess_colorchecker(data_dir, output_path, resize2half):
         
         # write file name
         print("[CCD Running] idx:{}, path:{}, camera:{}, ill:{}".format(idx, img_path, camera, img_gt[idx]))
-
         np.save('{}/{}.npy'.format(output_path, img_list[idx]), img)
         np.save('{}/{}_mask.npy'.format(output_path, img_list[idx]), mask)
         np.save('{}/{}_camera.npy'.format(output_path, img_list[idx]), camera)
         np.save('{}/{}_gt.npy'.format(output_path, img_list[idx]), img_gt[idx])
+        # np.save('{}/{}_mat24.npy'.format(output_path, img_list[idx]), mat24)
     print("CCD data is finished! time cost: {:2f}s".format(time.time() - start))
     
     
@@ -81,7 +104,7 @@ def preprocess_nus(data_dir, output_path, resize2half):
     save npy: img, mask, camera type, ground truth
     """
     if not os.path.exists(output_path):
-        os.mkdir(output_path)
+        os.mkdirs(output_path)
         
     data = load_data_nus(data_dir)
     dynamic = {'Canon1DsMkIII':16383, 'Canon600D':16383, 'FujifilmXM1':4095, 'NikonD5200':16383, 
@@ -104,7 +127,7 @@ def preprocess_nus(data_dir, output_path, resize2half):
 
         # black / white level correction
         img=img-darkness_level
-        img[img<0] = 0
+        img[img < 0] = 0
         h, w, c = img.shape
         sat = (saturationLevel - darkness_level) * SATURATION_SCALE
         img[img > sat] = sat
@@ -115,6 +138,9 @@ def preprocess_nus(data_dir, output_path, resize2half):
         coor = np.array(coor).astype(np.int32)
         mask = np.ones((h, w)).astype(np.float64)
         mask = cv2.fillPoly(mask, [coor], (0, 0, 0))
+        
+        # detect colorchecker
+        # mat24 = detect_colorchart(img, gt, detector, img_path)
         
         if resize2half:
             # resize image, (* 4) to be integer.
@@ -131,6 +157,7 @@ def preprocess_nus(data_dir, output_path, resize2half):
         np.save('{}/{}_mask.npy'.format(output_path, img_path.split('/')[-1].split('.')[0]), mask)
         np.save('{}/{}_camera.npy'.format(output_path, img_path.split('/')[-1].split('.')[0]), camera)
         np.save('{}/{}_gt.npy'.format(output_path, img_path.split('/')[-1].split('.')[0]), gt)
+        # np.save('{}/{}_mat24.npy'.format(output_path, img_path.split('/')[-1].split('.')[0]), mat24)
     print("NUS-8 data is finished! time cost{:2f}s".format(time.time() - start))
 
 def preprocess_cube(data_dir, output_path, resize2half):
@@ -144,7 +171,7 @@ def preprocess_cube(data_dir, output_path, resize2half):
     save npy: img, mask, camera type, ground truth
     """
     if not os.path.exists(output_path):
-        os.mkdir(output_path)
+        os.mkdirs(output_path)
         
     img_gt = load_ill_cube(data_dir)
     img_list = load_nameseq(data_dir + 'img.txt')
@@ -244,8 +271,8 @@ def load_nameseq(dir_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='HyperParam List')
-    parser.add_argument('--input_dir', type=str, default="/mnt/e/colorconstancy/")
-    parser.add_argument('--output_dir', type=str, default="/mnt/e/colorconstancy/tmp/")
+    parser.add_argument('--input_dir', type=str, default="./data/source/")
+    parser.add_argument('--output_dir', type=str, default="./data/processed/")
     parser.add_argument('--resize2half', type=bool, default=False)
     args, _ = parser.parse_known_args()
     input_dir = args.input_dir

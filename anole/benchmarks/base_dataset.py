@@ -1,16 +1,21 @@
 """
 Basic class for loading dataset (Pytorch)
+
+Reference:
+[1] Tang, Yuxiang, et al. "Transfer Learning for Color Constancy via Statistic Perspective." (2022).
+[2] Hu, Yuanming, Baoyuan Wang, and Stephen Lin. "Fc4: Fully convolutional color constancy with
+confidence-weighted pooling." Proceedings of the IEEE Conference on Computer Vision and Pattern
+Recognition. 2017.
 """
-from abc import abstractmethod
 import math
-from typing import Any, Callable, cast, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Optional, List
+from abc import abstractmethod
+from collections import OrderedDict
+
 import numpy as np
 import cv2
 import torch
 from torch.utils.data import Dataset
-import random
-
-from collections import OrderedDict
 
 from .utils import augment_ill, augment_img
 
@@ -23,6 +28,7 @@ class BaseDataset(Dataset):
     and denotes the abstract methods that all subclasses need
     to implement.
     """
+
     def __init__(
         self,
         dataset_name: str,
@@ -61,10 +67,11 @@ class BaseDataset(Dataset):
         self.angle = 60
         self.scale = [0.5, 1.0]
         self.aug_color = 0.8
+
+        # the camera types are contained the CCD/NUS8/Cube+ dataset.
         self.camera_type = [
-            'Canon5D', 'Canon1D', 'Canon550D', 'Canon1DsMkIII', 'Canon600D',
-            'FujifilmXM1', 'NikonD5200', 'OlympusEPL6', 'PanasonicGX1',
-            'SamsungNX2000', 'SonyA57', 'sRGB'
+            'Canon5D', 'Canon1D', 'Canon550D', 'Canon1DsMkIII', 'Canon600D', 'FujifilmXM1',
+            'NikonD5200', 'OlympusEPL6', 'PanasonicGX1', 'SamsungNX2000', 'SonyA57', 'sRGB'
         ]
 
     def __len__(self):
@@ -74,25 +81,28 @@ class BaseDataset(Dataset):
         # process image_path
         img_path = self.data_dir + self.img_list[idx]
 
+        # load image/ illumination/ camera type
         img, ill, camera = self.load_data(img_path)
+        # convert camera type from string to the one-hot vector
         device_id = self.camera2onehot(camera)
 
-        # One trick: Set 0 to a very small value
+        # Trick One: Set 0 to a very small value
         img = img * 65535.0  # 0 ~ 1 --> 0 ~ 65535
         img[img == 0] = 1e-5
 
         if self.training:
             img_batch = []
             gt_batch = []
-            # For a single image, augmenting multiple times can improve training efficiency
+            # Trick Two: do augment multiple times per image can improve training efficiency
             for _ in range(self.aug_num):
-                img_aug = augment_img(img, self.angle, self.scale,
-                                      self.input_size)
-                # Convert to statis
-                remove_stat, stat, si = self.generate_statistic_gt(
-                    img_aug, ill)
-                img_aug, gt_aug = augment_ill(remove_stat, stat,
-                                              self.aug_color)
+                img_aug = augment_img(img, self.angle, self.scale, self.input_size)
+                # Convert from illumination form to statis form, details in [1]
+                if not self.statistic_mode:
+                    remove_stat, stat, si = self.generate_statistic(img_aug, ill)
+                else:
+                    remove_stat, stat, si = img_aug, ill, np.ones_like(ill)
+                # do label augment
+                img_aug, gt_aug = augment_ill(remove_stat, stat, self.aug_color)
                 img_aug = img_aug / np.max(img_aug)
                 img_batch.append(img_aug)
                 gt_batch.append(gt_aug)
@@ -101,8 +111,8 @@ class BaseDataset(Dataset):
             img = np.power(img, (1.0 / 2.2))
             img = img.transpose(0, 3, 1, 2)
         else:
-            remove_stat, gt, si = self.generate_statistic_gt(img, ill)
-            # for obtain more point illumination estimation: reference FC4
+            remove_stat, gt, si = self.generate_statistic(img, ill)
+            # Trick Three: for obtain more point estimation: reference in [2]
             remove_stat = cv2.resize(remove_stat, (0, 0), fx=0.5, fy=0.5)
             img = remove_stat / np.max(remove_stat)
             img = np.power(img, (1.0 / 2.2))
@@ -120,25 +130,19 @@ class BaseDataset(Dataset):
     @abstractmethod
     def load_data(self, img_path):
         """
-        Each datasets require a different way to load the data.
+        Each dataset requires its own special read method.
         """
         pass
 
-    def generate_statistic_gt(self, img, ill):
-        if not self.statistic_mode:
-            return img, ill, np.ones_like(ill)
-        remove_stat, stat = self.mapping_into_statis(img)
-        # mapping ill to statisic
-        true_stat = self.L2_norm(ill * stat)
-        return remove_stat, true_stat, stat
-
-    def mapping_into_statis(self, img):
+    def generate_statistic(self, img, ill):
         """
         Core operation that the illuminant into statistic form
         """
-        stat = self.statis_norm(img)
-        remove = img * stat * math.sqrt(3)
-        return remove, stat
+        stat_i = self.statis_norm(img)
+        # mapping from ill to statisic
+        stat_img = img * stat_i * math.sqrt(3)
+        stat_label = self.L2_norm(ill * stat_i)
+        return stat_img, stat_label, stat_i
 
     def statis_norm(self, img):
         """
@@ -160,16 +164,8 @@ class BaseDataset(Dataset):
         TODO: Give statistic label more choice
         """
         img_blur = cv2.GaussianBlur(img, (7, 7), 1)
-        img_grad_x = cv2.Sobel(img_blur,
-                               cv2.CV_64F,
-                               0,
-                               1,
-                               borderType=cv2.BORDER_REFLECT)
-        img_grad_y = cv2.Sobel(img_blur,
-                               cv2.CV_64F,
-                               1,
-                               0,
-                               borderType=cv2.BORDER_REFLECT)
+        img_grad_x = cv2.Sobel(img_blur, cv2.CV_64F, 0, 1, borderType=cv2.BORDER_REFLECT)
+        img_grad_y = cv2.Sobel(img_blur, cv2.CV_64F, 1, 0, borderType=cv2.BORDER_REFLECT)
         img_grad = np.sqrt(np.power(img_grad_x, 2) + np.power(img_grad_y, 2))
         return img_grad
 
@@ -196,22 +192,20 @@ class BaseDataset(Dataset):
         return img_list
 
     def three_fold(self, idx):
+        """
+        two folds for test and one fold for training.
+        """
         img_list = []
         if self.training:
             for i in range(3):
                 if i == idx:
                     continue
-                img_list += self.load_nameseq(
-                    self.data_dir +
-                    '/{}_fold{}.txt'.format(self.dataset_name, i))
+                img_list += self.load_nameseq(f'{self.data_dir}/{self.dataset_name}_fold{i}.txt')
         else:
-            img_list = self.load_nameseq(
-                self.data_dir +
-                '/{}_fold{}.txt'.format(self.dataset_name, idx))
+            img_list = self.load_nameseq(f'{self.data_dir}/{self.dataset_name}_fold{idx}.txt')
 
         return img_list
 
 
 def generate_dataset(dataset_type, **kwargs):
-    return dataset_type(training=True, **kwargs), dataset_type(training=False,
-                                                               **kwargs)
+    return dataset_type(training=True, **kwargs), dataset_type(training=False, **kwargs)
