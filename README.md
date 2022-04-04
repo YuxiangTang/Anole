@@ -31,7 +31,7 @@ pip3 install -r requirements.txt
 
 #### ==> Option One: Download the pre-processed data. [Only Provide ColorChecker Now]
 
-Due to the large file size, we only provide the processed ColorChecker dataset.
+- Due to the large file size, we only provide [the processed ColorChecker dataset](https://drive.google.com/file/d/1ZXzFWK6iISrajigmeOI2AfE3BGiOGfLn/view?usp=sharing).
 
 #### ==> Option Two: Download the source data and pre-process it locally.
 
@@ -198,7 +198,7 @@ class IdentityNeck(nn.Module):
     def forward(self, x, **kwargs):
         return x
 
-# Need to register first and you can call it in the config.
+# Need to register first and then you can call it in the config.
 @NECK.register_obj
 def identity_neck(**kwargs):
     return IdentityNeck(**kwargs)
