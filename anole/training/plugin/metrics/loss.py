@@ -9,8 +9,8 @@ from .counter import Mean
 from ...builder import METRICSPLUGIN
 
 __all__ = [
-    'Loss', 'LossPluginMetric', 'IterationLoss', 'EpochLoss', 'WholeLoss',
-    'EvalLoss', 'loss_metrics'
+    'Loss', 'LossPluginMetric', 'IterationLoss', 'EpochLoss', 'WholeLoss', 'EvalLoss',
+    'loss_metrics'
 ]
 
 
@@ -28,6 +28,7 @@ class Loss(BaseMetric):
     The reset method will bring the metric to its initial state. By default
     this metric in its initial state will return a loss value of 0.
     """
+
     def __init__(self):
         """
         Creates an instance of the loss metric.
@@ -82,10 +83,15 @@ class Loss(BaseMetric):
 
 
 class LossPluginMetric(MetricPlugin):
+
     def __init__(self, reset_at, emit_at, mode):
         self._loss = Loss()
-        super(LossPluginMetric, self).__init__(self._loss, reset_at, emit_at,
-                                               mode)
+        super(LossPluginMetric, self).__init__(
+            self._loss,
+            reset_at,
+            emit_at,
+            mode,
+        )
 
     def reset(self, strategy=None) -> None:
         if self._reset_at == 'whole' or strategy is None:
@@ -105,20 +111,18 @@ class LossPluginMetric(MetricPlugin):
 
 
 class IterationLoss(LossPluginMetric):
+
     def __init__(self):
-        super(IterationLoss, self).__init__(reset_at='iteration',
-                                            emit_at='iteration',
-                                            mode='train')
+        super(IterationLoss, self).__init__(reset_at='iteration', emit_at='iteration', mode='train')
 
     def __str__(self):
         return "Loss_MB"
 
 
 class EpochLoss(LossPluginMetric):
+
     def __init__(self):
-        super(EpochLoss, self).__init__(reset_at='epoch',
-                                        emit_at='epoch',
-                                        mode='train')
+        super(EpochLoss, self).__init__(reset_at='epoch', emit_at='epoch', mode='train')
 
     def __str__(self):
         return "Loss_Ep"
@@ -130,13 +134,12 @@ class WholeLoss(LossPluginMetric):
     average loss over all patterns seen in all experiences.
     This plugin metric only works at eval time.
     """
+
     def __init__(self):
         """
         Creates an instance of StreamLoss metric
         """
-        super(WholeLoss, self).__init__(reset_at='whole',
-                                        emit_at='whole',
-                                        mode='train')
+        super(WholeLoss, self).__init__(reset_at='whole', emit_at='whole', mode='train')
 
     def __str__(self):
         return "Loss_Whole"
@@ -148,24 +151,19 @@ class EvalLoss(LossPluginMetric):
     average loss over all patterns seen in all experiences.
     This plugin metric only works at eval time.
     """
+
     def __init__(self):
         """
         Creates an instance of StreamLoss metric
         """
-        super(EvalLoss, self).__init__(reset_at='instance',
-                                       emit_at='instance',
-                                       mode='eval')
+        super(EvalLoss, self).__init__(reset_at='instance', emit_at='instance', mode='eval')
 
     def __str__(self):
         return "Loss_Whole"
 
 
 @METRICSPLUGIN.register_obj
-def loss_metrics(*,
-                 iteration=False,
-                 epoch=False,
-                 whole=False,
-                 eval=False) -> List[MetricPlugin]:
+def loss_metrics(*, iteration=False, epoch=False, whole=False, eval=False) -> List[MetricPlugin]:
     metrics = []
     if iteration:
         metrics.append(IterationLoss())

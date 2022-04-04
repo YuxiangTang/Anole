@@ -12,21 +12,12 @@ __all__ = ['cascade_stragtegy']
 
 
 class CascadeStragtegy(BaseStrategy):
+
     def __init__(
         self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion: Module,
-        plugins: List = [],
         **kwargs,
     ):
-        super().__init__(
-            model=model,
-            optimizer=optimizer,
-            criterion=criterion,
-            plugins=plugins,
-            **kwargs,
-        )
+        super().__init__(**kwargs)
 
     def _unpack_train_minibatch(self):
         img = self.train_batch['img']
@@ -63,5 +54,5 @@ class CascadeStragtegy(BaseStrategy):
 
 
 @STRATEGY.register_obj
-def cascade_stragtegy(model, optimizer, **kwargs):
-    return CascadeStragtegy(model, optimizer, **kwargs)
+def cascade_stragtegy(**kwargs):
+    return CascadeStragtegy(**kwargs)

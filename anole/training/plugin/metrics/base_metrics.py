@@ -1,4 +1,4 @@
-from typing import Union, TypeVar, Optional, TYPE_CHECKING
+from typing import Union, Optional, TYPE_CHECKING
 from typing_extensions import Protocol
 from torch import Tensor
 
@@ -30,6 +30,7 @@ class BaseMetric(Protocol):
     created within `PluginMetric`, which is then responsible for its
     update and results. See :class:`PluginMetric` for more details.
     """
+
     def result(self, **kwargs):
         """
         Obtains the value of the metric.
@@ -46,8 +47,8 @@ class BaseMetric(Protocol):
 
 
 class MetricValue(object):
-    def __init__(self, origin: 'BaseMetric', name: str, value: MetricType,
-                 x_plot: int):
+
+    def __init__(self, origin: 'BaseMetric', name: str, value: MetricType, x_plot: int):
         self.origin = origin
         self.name = name
         self.value = value
@@ -60,6 +61,7 @@ class MetricPlugin(BasePlugin):
     The user can subclass this class to easily implement custom plugin
     metrics.
     """
+
     def __init__(
         self,
         metric,

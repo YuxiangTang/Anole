@@ -10,7 +10,7 @@ __all__ = ['siie_pipeline']
 
 
 class SIIEPipeline(nn.Module):
-    def __init__(self, backbone, neck, head):
+    def __init__(self, backbone, neck, head, **kwargs):
         super(SIIEPipeline, self).__init__()
 
         self.rgb2uvhist = RGB2UVHist()

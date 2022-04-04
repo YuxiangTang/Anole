@@ -3,7 +3,6 @@ import time
 from typing import TYPE_CHECKING
 
 from .base_metrics import BaseMetric, MetricPlugin
-from .counter import Mean
 from ...builder import METRICSPLUGIN
 
 if TYPE_CHECKING:

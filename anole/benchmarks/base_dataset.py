@@ -169,9 +169,8 @@ class BaseDataset(Dataset):
         img_grad = np.sqrt(np.power(img_grad_x, 2) + np.power(img_grad_y, 2))
         return img_grad
 
-    def camera2onehot(self, camera, k):
-        return torch.tensor([[int(c == camera) for c in self.camera_type]
-                             for _ in range(k)]).float()
+    def camera2onehot(self, camera):
+        return torch.tensor([[int(c == camera) for c in self.camera_type] for _ in range(len(self.camera_type))]).float()
 
     def resize(self, img):
         return cv2.resize(img, (self.input_size, self.input_size))

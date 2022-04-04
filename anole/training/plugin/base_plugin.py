@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..strategy import BaseStrategy
 
+__all__ = ['BasePlugin']
+
 
 class BasePlugin(ABC):
     """
@@ -11,6 +13,7 @@ class BasePlugin(ABC):
     by the BaseStrategy with an empty function. Subclasses must override
     the callbacks.
     """
+
     def __init__(self):
         super().__init__()
         pass

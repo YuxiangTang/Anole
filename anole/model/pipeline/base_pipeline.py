@@ -7,7 +7,7 @@ __all__ = ['base_pipeline']
 
 
 class BasePipeline(nn.Module):
-    def __init__(self, backbone, neck, head):
+    def __init__(self, backbone, neck, head, **kwargs):
         super(BasePipeline, self).__init__()
 
         _backbone = build_from_cfg(backbone.name, backbone.params, BACKBONE)
@@ -21,7 +21,6 @@ class BasePipeline(nn.Module):
 
     def init_weight(self):
         for name, m in self.named_modules():
-            print(name)
             if "backbone" in name:
                 continue
             if isinstance(m, nn.Conv2d):

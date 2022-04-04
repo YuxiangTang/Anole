@@ -16,14 +16,16 @@ def init_dataloader(
     **kwargs,
 ):
     setattr(dataset, 'real_len', len(dataset) // batch_size)
-    return DataLoader(dataset=dataset,
-                      batch_size=batch_size,
-                      num_workers=num_workers,
-                      prefetch_factor=prefetch_factor,
-                      persistent_workers=persistent_workers,
-                      drop_last=drop_last,
-                      shuffle=shuffle,
-                      **kwargs)
+    return DataLoader(
+        dataset=dataset,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        prefetch_factor=prefetch_factor,
+        persistent_workers=persistent_workers,
+        drop_last=drop_last,
+        shuffle=shuffle,
+        **kwargs
+    )
 
 
 def init_model(model, **kwargs):

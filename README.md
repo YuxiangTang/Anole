@@ -29,9 +29,9 @@ pip3 install -r requirements.txt
 
 ### Prepare the dataset
 
-#### ==> Option One: Download the pre-processed data.
+#### ==> Option One: Download the pre-processed data. [Only Provide ColorChecker Now]
 
-The url is: 
+Due to the large file size, we only provide the processed ColorChecker dataset.
 
 #### ==> Option Two: Download the source data and pre-process it locally.
 
@@ -168,7 +168,7 @@ model:
 
 Any part can be changed in yaml and all implemented modules can be seen in [anole/model](https://github.com/YuxiangTang/Anole/tree/master/anole/model). 
 
-> The use of Anole is similar to [MMCV](https://github.com/open-mmlab/mmcv). The module is called and extended by Registry, and the model and training strategy are built by parsing "config/*. yaml" file in [launch.py](https://github.com/YuxiangTang/Anole/blob/tangyuxiang_dev/anole/launch.py) file.
+> The use of Anole is similar to [MMCV](https://github.com/open-mmlab/mmcv). The module is called and extended by the Registry, and the model and training strategies are built by parsing "config/*. yaml" file in [launch.py](https://github.com/YuxiangTang/Anole/blob/tangyuxiang_dev/anole/launch.py).
 
 ## Extending Anole 🙌
 
@@ -179,7 +179,7 @@ We divide the model structure into four categories:
 - Backbone: Used to extract features, it is generally composed of convolution parts of classical models, such as SqueezeNet, AlexNet, etc.
 - Neck: Used for feature processing to enhance the expression ability of networks, such as channel re-weighting module in MDLCC, 
 - Head: Used to strategically output prediction, such as confidence-weighted pooling in FC4
-- Pipeline: Assemble the above four categories of modules. Most models can share a pipeline, such as (FC4, MDLCC), (CLCC, IGTN), (SIIE, TLCC). 
+- Pipeline: Assemble the above three categories of modules. Most models can share one pipeline, such as (FC4, MDLCC), (CLCC, IGTN), (SIIE, TLCC). 
 
 You can focus on customizing a particular category, and we give an [example](https://github.com/YuxiangTang/Anole/blob/master/anole/model/neck/identity_neck.py) for a custom neck in the following:
 

@@ -12,23 +12,14 @@ __all__ = ['classic_stragtegy']
 
 
 class ClassicStragtegy(BaseStrategy):
+
     def __init__(
         self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion: Module,
-        plugins: List = [],
         device_mode: bool = False,
         statis_mode: bool = False,
         **kwargs,
     ):
-        super().__init__(
-            model=model,
-            optimizer=optimizer,
-            criterion=criterion,
-            plugins=plugins,
-            **kwargs,
-        )
+        super().__init__(**kwargs)
         self.device_mode = device_mode
         self.statis_mode = statis_mode
 
@@ -65,5 +56,5 @@ class ClassicStragtegy(BaseStrategy):
 
 
 @STRATEGY.register_obj
-def classic_stragtegy(model, optimizer, **kwargs):
-    return ClassicStragtegy(model, optimizer, **kwargs)
+def classic_stragtegy(**kwargs):
+    return ClassicStragtegy(**kwargs)

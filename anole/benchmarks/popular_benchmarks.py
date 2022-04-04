@@ -6,6 +6,7 @@ __all__ = ['CCD', 'NUS', 'Cube']
 
 
 class RAWDataset(BaseDataset):
+
     def __init__(self,
                  data_dir,
                  dataset_name,
@@ -33,7 +34,7 @@ class RAWDataset(BaseDataset):
         camera = str(np.load(img_path + '_camera.npy'))
         # preprocess raw
         img = img / np.max(img)
-        idx1, idx2, _ = np.where(mask is False)
+        idx1, idx2, _ = np.where(mask == False)
         img[idx1, idx2, :] = 0
         return img, ill, camera
 

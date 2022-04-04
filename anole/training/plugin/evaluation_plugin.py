@@ -1,9 +1,8 @@
-import warnings
 from copy import copy
 from collections import defaultdict
 from typing import Union, Sequence, TYPE_CHECKING
 
-from .metrics import loss_metrics
+from .metrics import loss_metrics, best_recorder_metrics
 from .base_plugin import BasePlugin
 if TYPE_CHECKING:
     from .metrics import MetricPlugin
@@ -59,7 +58,7 @@ class EvaluationPlugin(BasePlugin):
         self.loggers: Sequence['BaseLogger'] = loggers
 
         if len(self.loggers) == 0:
-            warnings.warn('No loggers specified, metrics will not be logged')
+            raise Exception('No loggers specified, metrics will not be logged.')
 
         self.all_metric_results = defaultdict(lambda: ([], []))
         self.last_metric_results = {}
@@ -74,6 +73,7 @@ class EvaluationPlugin(BasePlugin):
                     for m in metric_result:
                         metric_values.append(m)
 
+        # Save the intermediate results
         for metric_value in metric_values:
             name = metric_value.name
             x = metric_value.x_plot
@@ -150,6 +150,6 @@ class EvaluationPlugin(BasePlugin):
 
 
 default_logger = EvaluationPlugin(
-    loss_metrics(iteration=True, epoch=True, whole=True, eval=True),
+    loss_metrics(iteration=True, epoch=True, whole=True, eval=True) + best_recorder_metrics(),
     loggers=[TextLogger()],
 )
