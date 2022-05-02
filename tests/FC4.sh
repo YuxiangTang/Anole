@@ -1,1 +1,1 @@
-python launch.py --cfg ./config/FC4_average.yaml
+python launch.py --config-name FC4_average_CCD.yaml

@@ -1,0 +1,28 @@
+exp_name: MDLCC
+mode: train
+checkpoint_path: ""
+device: "cuda:0"
+
+defaults:
+  - _self_
+  - dataset: CCD
+  - model: SIIE
+  - strategy: classic_strategy
+  - plugin: basic_plugin
+
+criterion:
+  name: angular_loss
+  params: {}
+
+optimizer:
+  name: Adam
+  params:
+    lr: 3e-4
+    weight_decay: 5e-5
+
+lr_scheduler:
+  name: CosineAnnealingLR
+  params:
+    verbose: False
+    T_max: 20
+    eta_min: 3e-6

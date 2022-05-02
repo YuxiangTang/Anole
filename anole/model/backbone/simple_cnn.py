@@ -10,6 +10,7 @@ __all__ = ['ThreeLayerCNN', 'three_layer_cnn']
 
 
 class ThreeLayerCNN(nn.Module):
+
     def __init__(self):
         super(three_layer_cnn, self).__init__()
         self.features = nn.Sequential(

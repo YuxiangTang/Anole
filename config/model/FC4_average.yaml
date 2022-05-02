@@ -1,0 +1,18 @@
+name: base_pipeline
+params: {}
+
+backbone:
+  name: squeezenet1_1
+  params:
+    pretrained: True
+
+neck: 
+  name: fully_conv_neck
+  params:
+    input_channels: 512
+    output_channels: 64
+
+head:
+  name: average_pooling_head
+  params:
+    input_channels: 64

@@ -13,37 +13,28 @@ from anole.utils import load_state_dict
 __all__ = ['SqueezeNet', 'squeezenet1_0', 'squeezenet1_1']
 
 model_urls = {
-    'squeezenet1_0':
-    'https://download.pytorch.org/models/squeezenet1_0-a815701f.pth',
-    'squeezenet1_1':
-    'https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth',
+    'squeezenet1_0': 'https://download.pytorch.org/models/squeezenet1_0-a815701f.pth',
+    'squeezenet1_1': 'https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth',
 }
 
 
 class Fire(nn.Module):
-    def __init__(self, inplanes, squeeze_planes, expand1x1_planes,
-                 expand3x3_planes):
+
+    def __init__(self, inplanes, squeeze_planes, expand1x1_planes, expand3x3_planes):
         super(Fire, self).__init__()
         self.inplanes = inplanes
 
         self.group1 = nn.Sequential(
-            OrderedDict([('squeeze',
-                          nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)),
+            OrderedDict([('squeeze', nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)),
                          ('squeeze_activation', nn.ReLU(inplace=True))]))
 
         self.group2 = nn.Sequential(
-            OrderedDict([('expand1x1',
-                          nn.Conv2d(squeeze_planes,
-                                    expand1x1_planes,
-                                    kernel_size=1)),
+            OrderedDict([('expand1x1', nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)),
                          ('expand1x1_activation', nn.ReLU(inplace=True))]))
 
         self.group3 = nn.Sequential(
             OrderedDict([('expand3x3',
-                          nn.Conv2d(squeeze_planes,
-                                    expand3x3_planes,
-                                    kernel_size=3,
-                                    padding=1)),
+                          nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1)),
                          ('expand3x3_activation', nn.ReLU(inplace=True))]))
 
     def forward(self, x):
@@ -52,6 +43,7 @@ class Fire(nn.Module):
 
 
 class SqueezeNet(nn.Module):
+
     def __init__(self, version=1.0, num_classes=1000):
         super(SqueezeNet, self).__init__()
         if version not in [1.0, 1.1]:
@@ -92,8 +84,7 @@ class SqueezeNet(nn.Module):
             )
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, num_classes, kernel_size=1)
-        self.classifier = nn.Sequential(nn.Dropout(p=0.5), final_conv,
-                                        nn.ReLU(inplace=True),
+        self.classifier = nn.Sequential(nn.Dropout(p=0.5), final_conv, nn.ReLU(inplace=True),
                                         nn.AvgPool2d(13))
 
         for m in self.modules():

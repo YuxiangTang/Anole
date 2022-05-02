@@ -29,8 +29,7 @@ class TensorboardLogger(BaseLogger):
 
     def __init__(
         self,
-        tb_log_dir: str = "./log/tb_log",
-        folder_name: str = "",
+        tb_log_dir: str = ".",
     ):
         """
         Creates an instance of the `TensorboardLogger`.
@@ -40,9 +39,9 @@ class TensorboardLogger(BaseLogger):
             tensorboard log file. Default ''.
         """
         super().__init__()
-        if not os.path.exists(f"{tb_log_dir}/{folder_name}"):
-            os.makedirs(f"{tb_log_dir}/{folder_name}")
-        self.writer = SummaryWriter(f"{tb_log_dir}/{folder_name}")
+        if not os.path.exists(f"{tb_log_dir}"):
+            os.makedirs(f"{tb_log_dir}")
+        self.writer = SummaryWriter(f"{tb_log_dir}")
 
         # Shuts down the writer gracefully on process exit
         # or when this logger gets GCed. Fixes issue #864.

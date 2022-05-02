@@ -1,0 +1,16 @@
+name: siie_pipeline
+params: {}
+
+backbone:
+  name: three_layer_cnn
+  params: {}
+
+neck: 
+  name: identity_neck
+  params: {}
+
+head:
+  name: basic_pred_head
+  params:
+    input_channels: 512
+    kernel_size: 13

@@ -1,0 +1,23 @@
+logger:
+  name: 
+    - text_logger
+    - tensorboard_logger
+  params: 
+    - {}
+    - tb_log_dir: "."
+
+metric:
+  name: 
+    - loss_metrics
+    - timing_metrics
+    - best_recorder_metrics
+  params: 
+    - iteration: True
+      epoch: True
+      whole: True
+      eval: True
+    - iteration: True
+      epoch: True
+      whole: True
+      eval: True
+    - sort_: min

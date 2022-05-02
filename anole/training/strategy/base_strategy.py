@@ -35,10 +35,10 @@ class BaseStrategy(object):
         device: str = 'cuda:0',
     ):
         self.exp_name = exp_name
-        self.model = model.to(device)
+        self.model = model
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
-        self._criterion = criterion.to(device)
+        self._criterion = criterion
         self.train_epochs = train_epochs
         self.eval_every = eval_every
         self.ckpt_every = ckpt_every

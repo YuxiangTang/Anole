@@ -8,7 +8,7 @@ from torch.optim import Optimizer
 
 from ..builder import STRATEGY
 
-__all__ = ['classic_stragtegy']
+__all__ = ['classic_strategy']
 
 
 class ClassicStragtegy(BaseStrategy):
@@ -56,5 +56,5 @@ class ClassicStragtegy(BaseStrategy):
 
 
 @STRATEGY.register_obj
-def classic_stragtegy(**kwargs):
+def classic_strategy(**kwargs):
     return ClassicStragtegy(**kwargs)

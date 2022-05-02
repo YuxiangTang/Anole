@@ -1,4 +1,4 @@
-# Anole
+# Anole: Recover the Reality from Camera.
 
 > An End-to-End Code Library and Public Platform for Color Constancy 🛠️
 
@@ -35,7 +35,7 @@ pip3 install -r requirements.txt
 
 #### ==> Option Two: Download the source data and pre-process it locally.
 
-**Step1:** Download the source data and organize files as required
+**Step1:** Download the source data and organize files as required.
 
 You need to create the initial folder as follows, and then put the corresponding datasets one by one.
 
@@ -210,7 +210,6 @@ def identity_neck(**kwargs):
 | Results on ColorChecker<sup>[1, 2]</sup> | Mean | Median | Tri-Mean | Best 25% | Worst 25% |
 | ---------------------------------------- | ---- | ------ | -------- | -------- | --------- |
 | FC4 (Squeeznet)<sup>[6]</sup>            |      |        |          |          |           |
-| FC4 (Alexnet)<sup>[6]</sup>              |      |        |          |          |           |
 | SIIE<sup>[5]</sup>                       |      |        |          |          |           |
 | C4<sup>[7]</sup>                         |      |        |          |          |           |
 | MDLCC<sup>[8]</sup>                      |      |        |          |          |           |
@@ -219,7 +218,6 @@ def identity_neck(**kwargs):
 | Results on NUS-8<sup>[3]</sup> | Mean | Median | Tri-Mean | Best 25% | Worst 25% |
 | ------------------------------ | ---- | ------ | -------- | -------- | --------- |
 | FC4 (Squeeznet)<sup>[6]</sup>  |      |        |          |          |           |
-| FC4 (Alexnet)<sup>[6]</sup>    |      |        |          |          |           |
 | SIIE<sup>[5]</sup>             |      |        |          |          |           |
 | C4<sup>[7]</sup>               |      |        |          |          |           |
 | MDLCC<sup>[8]</sup>            |      |        |          |          |           |
@@ -228,11 +226,23 @@ def identity_neck(**kwargs):
 | Results on Cube+<sup>[4]</sup> | Mean | Median | Tri-Mean | Best 25% | Worst 25% |
 | ------------------------------ | ---- | ------ | -------- | -------- | --------- |
 | FC4 (Squeeznet)<sup>[6]</sup>  |      |        |          |          |           |
-| FC4 (Alexnet)<sup>[6]</sup>    |      |        |          |          |           |
 | SIIE<sup>[5]</sup>             |      |        |          |          |           |
 | C4<sup>[7]</sup>               |      |        |          |          |           |
 | MDLCC<sup>[8]</sup>            |      |        |          |          |           |
 | TLCC<sup>[9]</sup>             |      |        |          |          |           |
+
+## Citation 📄
+
+If you use this toolbox in your research, please cite this project. 
+
+```latex
+@misc{anole,
+    title={{Anole}: Recover the Reality from Camera.},
+    author={Anole Contributors},
+    howpublished = {\url{https://github.com/YuxiangTang/Anole}},
+    year={2022}
+}
+```
 
 ## Reference 📖
 
@@ -253,4 +263,8 @@ def identity_neck(**kwargs):
 [8] Xiao, Jin, Shuhang Gu, and Lei Zhang. "Multi-domain learning for accurate and few-shot color constancy." *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*. 2020.
 
 [9] Tang, Yuxiang, et al. "Transfer Learning for Color Constancy via Statistic Perspective." (2022).
+
+[10] Lomonaco, Vincenzo, et al. "Avalanche: an end-to-end library for continual learning." *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*. 2021.
+
+[11] Contributors, M. M. C. V. "MMCV: OpenMMLab computer vision foundation." (2018).
 

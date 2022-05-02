@@ -1,7 +1,7 @@
-import sys
 from typing import List, Tuple, Type, TYPE_CHECKING
 
 import torch
+import logging
 
 from .base_logger import BaseLogger
 from ..metrics import MetricValue
@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from anole.training import BaseStrategy
 
 __all__ = ['TextLogger', 'text_logger']
+
+logger = logging.getLogger(__name__)
 
 
 class TextLogger(BaseLogger):
@@ -36,14 +38,13 @@ class TextLogger(BaseLogger):
         different formats.
     """
 
-    def __init__(self, file=sys.stdout):
+    def __init__(self):
         """
         Creates an instance of `TextLogger` class.
         :param file: destination file to which print metrics
             (default=sys.stdout).
         """
         super().__init__()
-        self.file = file
         self.metric_vals = {}
 
         self.epoch = 0
@@ -54,6 +55,7 @@ class TextLogger(BaseLogger):
         self.instance_iteration = 0
 
         self.is_training = False
+        global logger
 
     def log_single_metric(self, name, value, x_plot) -> None:
         self.metric_vals[name] = (name, x_plot, value)
@@ -61,7 +63,7 @@ class TextLogger(BaseLogger):
     def _start(self, strategy: 'BaseStrategy'):
         action_name = 'training' if strategy.is_training else 'eval'
         name = strategy.dataset.dataset_name
-        print('-- Starting {} on {}--'.format(action_name, name), file=self.file, flush=True)
+        logger.info('-- Starting {} on {}--'.format(action_name, name))
 
     def _val_to_str(self, m_val):
         if isinstance(m_val, torch.Tensor):
@@ -74,7 +76,8 @@ class TextLogger(BaseLogger):
     def print_current_metrics(self):
         if len(self.metric_vals) == 0:
             return
-        sorted_vals = self.metric_vals.values() # sorted(self.metric_vals.values(), key=lambda x: x[0])
+        sorted_vals = self.metric_vals.values(
+        )  # sorted(self.metric_vals.values(), key=lambda x: x[0])
         msg = "Epoch:{}, Step:{} [{}/{}]".format(self.epoch + 1, self.total_iterations + 1,
                                                  self.train_iterations + 1, self.instance_iteration)
         if self.is_training:
@@ -89,22 +92,22 @@ class TextLogger(BaseLogger):
                 msg_eval += f'{name} = {val}, '
             else:
                 msg += f'{name} = {val}, '
-            
-        print(msg, file=self.file, flush=True)
+
+        logger.info(msg)
         if msg_eval != "":
-            print(msg_eval, file=self.file, flush=True)
+            logger.info(msg_eval)
 
     # *************** Training Phase ***************
     def before_training(self, strategy: 'BaseStrategy', metric_values: List['MetricValue'],
                         **kwargs):
         super().before_training(strategy, metric_values, **kwargs)
         self.total_epoch = strategy.train_epochs
-        # print('-- Start of training phase --', file=self.file, flush=True)
+        # logger.info('-- Start of training phase --')
 
     def after_training(self, strategy: 'BaseStrategy', metric_values: List['MetricValue'],
                        **kwargs):
         super().after_training(strategy, metric_values, **kwargs)
-        # print('-- End of training phase --', file=self.file, flush=True)
+        # logger.info('-- End of training phase --')
 
     def before_training_epoch(self, strategy: 'BaseStrategy', metric_values: List['MetricValue'],
                               **kwargs):
@@ -118,7 +121,7 @@ class TextLogger(BaseLogger):
                              **kwargs):
         super().after_training_epoch(strategy, metric_values, **kwargs)
         self.print_current_metrics()
-        print(f'Epoch {strategy.clock.train_epochs + 1} ended.', file=self.file, flush=True)
+        logger.info(f'Epoch {strategy.clock.train_epochs + 1} ended.')
         self.metric_vals = {}
 
     def before_training_iteration(self, strategy: 'BaseStrategy',
@@ -138,12 +141,12 @@ class TextLogger(BaseLogger):
     def before_eval(self, strategy: 'BaseStrategy', metric_values: List['MetricValue'], **kwargs):
         super().before_eval(strategy, metric_values, **kwargs)
         self.is_training = False
-        # print('-- >> Start of eval phase << --', file=self.file, flush=True)
+        # logger.info('-- >> Start of eval phase << --')
 
     def after_eval(self, strategy: 'BaseStrategy', metric_values: List['MetricValue'], **kwargs):
         super().after_eval(strategy, metric_values, **kwargs)
         self.print_current_metrics()
-        # print('-- >> End of eval phase << --', file=self.file, flush=True)
+        # logger.info('-- >> End of eval phase << --')
         self.metric_vals = {}
 
 

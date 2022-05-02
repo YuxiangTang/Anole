@@ -1,0 +1,10 @@
+name: cascade_stragtegy
+params:
+  exp_name: ${exp_name}
+  ckpt_path: './ckpt/'
+  train_epochs: 3000
+  print_every: 20
+  eval_every: 3
+  ckpt_every: 50
+  device_mode: False
+  statis_mode: ${dataset.params.statistic_mode}

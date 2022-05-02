@@ -8,9 +8,7 @@ from collections import OrderedDict
 from ..builder import BACKBONE
 from anole.utils import load_state_dict
 
-__all__ = [
-    'ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'
-]
+__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
@@ -23,12 +21,7 @@ model_urls = {
 
 def conv3x3(in_planes, out_planes, stride=1):
     # "3x3 convolution with padding"
-    return nn.Conv2d(in_planes,
-                     out_planes,
-                     kernel_size=3,
-                     stride=stride,
-                     padding=1,
-                     bias=False)
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 
 class BasicBlock(nn.Module):
@@ -65,12 +58,7 @@ class Bottleneck(nn.Module):
         m['conv1'] = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         m['bn1'] = nn.BatchNorm2d(planes)
         m['relu1'] = nn.ReLU(inplace=True)
-        m['conv2'] = nn.Conv2d(planes,
-                               planes,
-                               kernel_size=3,
-                               stride=stride,
-                               padding=1,
-                               bias=False)
+        m['conv2'] = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
         m['bn2'] = nn.BatchNorm2d(planes)
         m['relu2'] = nn.ReLU(inplace=True)
         m['conv3'] = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
@@ -90,16 +78,12 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
+
     def __init__(self, block, layers, num_classes=1000):
         self.inplanes = 64
         super(ResNet, self).__init__()
         m = OrderedDict()
-        m['conv1'] = nn.Conv2d(3,
-                               64,
-                               kernel_size=7,
-                               stride=2,
-                               padding=3,
-                               bias=False)
+        m['conv1'] = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         m['bn1'] = nn.BatchNorm2d(64)
         m['relu1'] = nn.ReLU(inplace=True)
         m['maxpool'] = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -113,8 +97,7 @@ class ResNet(nn.Module):
         self.avgpool = nn.Sequential(nn.AvgPool2d(7))
 
         self.group2 = nn.Sequential(
-            OrderedDict([('fc', nn.Linear(512 * block.expansion,
-                                          num_classes))]))
+            OrderedDict([('fc', nn.Linear(512 * block.expansion, num_classes))]))
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):

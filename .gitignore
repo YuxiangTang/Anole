@@ -1,7 +1,6 @@
 __pycache__/
 **/__pycache__/
-log
-ckpt
 pretrained
 .ipynb_checkpoints
 std.log
+outputs
